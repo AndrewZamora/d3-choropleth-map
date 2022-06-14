@@ -18,11 +18,9 @@
   const innerHeight = chartHeight - margin.top - margin.bottom;
   const innerWidth = chartWidth - margin.left - margin.right;
   // Create map and projection https://github.com/d3/d3-geo/blob/v3.0.1/README.md#geoPath
-  const projection = d3
-    .geoAlbersUsa()
-    .scale(1000)
-    // .translate([innerWidth / 2, innerHeight / 2])
-    // .scale(1000);
+  const projection = d3.geoAlbersUsa().scale(1000);
+  // .translate([innerWidth / 2, innerHeight / 2])
+  // .scale(1000);
   const path = d3.geoPath().projection(projection);
   // Select DOM elements and apply dimensions
   const chart = d3
@@ -30,14 +28,26 @@
     .append("svg")
     .attr("height", chartHeight)
     .attr("width", chartWidth);
-  console.log(topojson.feature(countyData, countyData.objects["counties"]));
+  const states = topojson.feature(
+    countyData,
+    countyData.objects["states"]
+  ).features;
+  const counties = topojson.feature(
+    countyData,
+    countyData.objects["counties"]
+  ).features;
   chart
     .selectAll("path")
-    .data(topojson.feature(countyData, countyData.objects["nation"]).features)
+    .data(states)
     .enter()
     .append("path")
     .attr("d", d3.geoPath())
-    .attr("fill", (d) => {
-      return "green";
-    });
+    .attr("class", "state");
+  chart
+    .selectAll("path")
+    .data(counties)
+    .enter()
+    .append("path")
+    .attr("d", d3.geoPath())
+    .attr("class", "county");
 })();
