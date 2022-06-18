@@ -7,24 +7,43 @@
   const requests = dataLinks.map(async (link) => {
     return await (await fetch(link)).json();
   });
-  const [countyData, educationData] = await Promise.all(requests).catch((error) =>
-    console.log({ error })
+  const [countyData, educationData] = await Promise.all(requests).catch(
+    (error) => console.log({ error })
   );
+  // Organize edu data by Federal Information Processing Standard Publication (FIPS) https://www.census.gov/library/reference/code-lists/ansi.html
   let educationDataByFips = {};
   educationData.forEach((county) => {
     educationDataByFips[county.fips] = county;
   });
   // Create chart container dimensions
   const margin = { top: 40, right: 80, bottom: 40, left: 80 };
-  const chartHeight = 1000;
+  const chartHeight = 700;
   const chartWidth = 1000;
   const innerHeight = chartHeight - margin.top - margin.bottom;
   const innerWidth = chartWidth - margin.left - margin.right;
-  // Create colors pattern
+  // Create color pattern
   const colorScale = d3
     .scaleThreshold()
     .domain([10, 20, 30, 40, 100])
     .range(d3.schemeReds[5]);
+// Add legend to map
+  const legend = d3
+    .select("#chart-container ")
+    .append("svg")
+    .attr("id", "legend")
+    .attr("height", "30px")
+    .attr("width", "150px");
+    legend
+    .append("g")
+    .selectAll()
+    .data([10, 20, 30, 40, 100])
+    .enter()
+    .append("rect")
+    .attr("fill", (d, index) =>  `${colorScale(d)}`)
+    .attr("x", (d, index) => `${30 * index}`)
+    .attr("height", "30px")
+    .attr("width", "30px")
+    .attr("transform", `translate(30,0)`);
   // Select DOM elements and apply dimensions
   const chart = d3
     .select("#chart-container")
