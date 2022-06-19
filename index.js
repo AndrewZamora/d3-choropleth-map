@@ -26,24 +26,30 @@
     .scaleThreshold()
     .domain([10, 20, 30, 40, 100])
     .range(d3.schemeReds[5]);
-// Add legend to map
+  // Add legend to map
   const legend = d3
     .select("#chart-container ")
     .append("svg")
     .attr("id", "legend")
     .attr("height", "30px")
     .attr("width", "150px");
-    legend
+  legend
     .append("g")
     .selectAll()
     .data([10, 20, 30, 40, 100])
     .enter()
     .append("rect")
-    .attr("fill", (d, index) =>  `${colorScale(d)}`)
+    .attr("fill", (d, index) => `${colorScale(d)}`)
     .attr("x", (d, index) => `${30 * index}`)
     .attr("height", "30px")
     .attr("width", "30px")
     .attr("transform", `translate(30,0)`);
+  // Create tooltip
+  const tooltip = d3
+    .select("#chart-container")
+    .append("g")
+    .attr("id", "tooltip")
+    .style("visibility", "hidden");
   // Select DOM elements and apply dimensions
   const chart = d3
     .select("#chart-container")
@@ -79,6 +85,27 @@
     })
     .attr("data-education", (d) => {
       return educationDataByFips[d.id].bachelorsOrHigher;
+    })
+    .on("mouseover", function (d) {
+      const [mouseX, mouseY] = d3.mouse(this);
+      if (educationDataByFips[d.id]) {
+        const { bachelorsOrHigher, area_name, state } = educationDataByFips[d.id];
+        tooltip
+          .attr("data-education", d3.select(this).attr("data-education"))
+          .style("position", "absolute")
+          .style("font-size", "12px")
+          .style("background", "#333")
+          .style("color", "#FFF")
+          .style("border-radius", "4px")
+          .style("left", `${Math.ceil(mouseX)}px`)
+          .style("top", `${Math.ceil(mouseY)}px`)
+          .style("visibility", "visible")
+          .style("padding", "10px")
+          .html(`${area_name}, ${state}: ${bachelorsOrHigher}`);
+      }
+    })
+    .on("mouseout", () => {
+      tooltip.style("visibility", "hidden");
     });
   chart
     .selectAll("path")
