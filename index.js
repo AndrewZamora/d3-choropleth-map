@@ -26,6 +26,12 @@
     .scaleThreshold()
     .domain([10, 20, 30, 40, 100])
     .range(d3.schemeReds[5]);
+  // Create tooltip
+  const tooltip = d3
+    .select("#chart-container")
+    .append("div")
+    .attr("id", "tooltip")
+    .style("visibility", "hidden");
   // Add legend to map
   const legend = d3
     .select("#chart-container ")
@@ -44,12 +50,6 @@
     .attr("height", "30px")
     .attr("width", "30px")
     .attr("transform", `translate(30,0)`);
-  // Create tooltip
-  const tooltip = d3
-    .select("#chart-container")
-    .append("g")
-    .attr("id", "tooltip")
-    .style("visibility", "hidden");
   // Select DOM elements and apply dimensions
   const chart = d3
     .select("#chart-container")
@@ -87,21 +87,22 @@
       return educationDataByFips[d.id].bachelorsOrHigher;
     })
     .on("mouseover", function (d) {
-      const [mouseX, mouseY] = d3.mouse(this);
       if (educationDataByFips[d.id]) {
-        const { bachelorsOrHigher, area_name, state } = educationDataByFips[d.id];
+        const { bachelorsOrHigher, area_name, state } =
+          educationDataByFips[d.id];
+        const { pageX, pageY } = d3.event;
+        const tooltipText = `${area_name}, ${state}: ${bachelorsOrHigher}`;
         tooltip
-          .attr("data-education", d3.select(this).attr("data-education"))
           .style("position", "absolute")
           .style("font-size", "12px")
           .style("background", "#333")
           .style("color", "#FFF")
           .style("border-radius", "4px")
-          .style("left", `${Math.ceil(mouseX)}px`)
-          .style("top", `${Math.ceil(mouseY)}px`)
+          .style("left", `${pageX}px`)
+          .style("top", `${pageY}px`)
           .style("visibility", "visible")
           .style("padding", "10px")
-          .html(`${area_name}, ${state}: ${bachelorsOrHigher}`);
+          .html(tooltipText);
       }
     })
     .on("mouseout", () => {
