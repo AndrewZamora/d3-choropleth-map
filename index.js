@@ -15,6 +15,15 @@
   educationData.forEach((county) => {
     educationDataByFips[county.fips] = county;
   });
+  // Get max and min edu percents
+  const maxEduPercent = d3.max(educationData, (d) => d.bachelorsOrHigher);
+  const minEduPercent = d3.min(educationData, (d) => d.bachelorsOrHigher);
+  // Create scale for legend
+  const legendXScale = d3
+    .scaleLinear()
+    .range([0, 5])
+    .domain([minEduPercent, maxEduPercent]);
+  const legendXAxis = d3.axisBottom(legendXScale)
   // Create chart container dimensions
   const margin = { top: 40, right: 80, bottom: 40, left: 80 };
   const chartHeight = 700;
@@ -37,7 +46,7 @@
     .select("#chart-container ")
     .append("svg")
     .attr("id", "legend")
-    .attr("height", "30px")
+    .attr("height", "50px")
     .attr("width", "150px");
   legend
     .append("g")
@@ -50,6 +59,7 @@
     .attr("height", "30px")
     .attr("width", "30px")
     .attr("transform", `translate(30,0)`);
+    legend.append("g").call(legendXAxis).attr("transform", `translate(30,${30})`);
   // Select DOM elements and apply dimensions
   const chart = d3
     .select("#chart-container")
