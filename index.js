@@ -19,11 +19,17 @@
   const maxEduPercent = d3.max(educationData, (d) => d.bachelorsOrHigher);
   const minEduPercent = d3.min(educationData, (d) => d.bachelorsOrHigher);
   // Create scale for legend
+  const legendPercents = [3, 12, 21, 30, 39, 48, 57, 66];
   const legendXScale = d3
     .scaleLinear()
-    .range([0, 5])
-    .domain([minEduPercent, maxEduPercent]);
-  const legendXAxis = d3.axisBottom(legendXScale)
+    .range([0, 30 * legendPercents.length - 30])
+    .domain([0, maxEduPercent]);
+    console.log(maxEduPercent)
+  const legendXAxis = d3.axisBottom(legendXScale).tickFormat((d,index) => {
+    console.log("yo",d, index)
+    return `${legendPercents[index]}%`;
+  });
+
   // Create chart container dimensions
   const margin = { top: 40, right: 80, bottom: 40, left: 80 };
   const chartHeight = 700;
@@ -33,8 +39,8 @@
   // Create color pattern
   const colorScale = d3
     .scaleThreshold()
-    .domain([10, 20, 30, 40, 100])
-    .range(d3.schemeReds[5]);
+    .range(d3.schemeReds[legendPercents.length])
+    .domain(legendPercents);
   // Create tooltip
   const tooltip = d3
     .select("#chart-container")
@@ -47,19 +53,23 @@
     .append("svg")
     .attr("id", "legend")
     .attr("height", "50px")
-    .attr("width", "150px");
+    .attr("width", "250px");
   legend
     .append("g")
     .selectAll()
-    .data([10, 20, 30, 40, 100])
+    .data(legendPercents)
     .enter()
     .append("rect")
-    .attr("fill", (d, index) => `${colorScale(d)}`)
+    .attr("fill", (d, index) =>
+      d === legendPercents[legendPercents.length - 1]
+        ? "transparent"
+        : `${colorScale(d)}`
+    )
     .attr("x", (d, index) => `${30 * index}`)
-    .attr("height", "30px")
+    .attr("height", "10px")
     .attr("width", "30px")
     .attr("transform", `translate(30,0)`);
-    legend.append("g").call(legendXAxis).attr("transform", `translate(30,${30})`);
+  legend.append("g").call(legendXAxis).attr("transform", `translate(30,${10})`);
   // Select DOM elements and apply dimensions
   const chart = d3
     .select("#chart-container")
@@ -101,8 +111,9 @@
         const { bachelorsOrHigher, area_name, state } =
           educationDataByFips[d.id];
         const { pageX, pageY } = d3.event;
-        const tooltipText = `${area_name}, ${state}: ${bachelorsOrHigher}`;
+        const tooltipText = `${area_name}, ${state}: ${bachelorsOrHigher}%`;
         tooltip
+          .attr("data-education", d3.select(this).attr("data-education"))
           .style("position", "absolute")
           .style("font-size", "12px")
           .style("background", "#333")
