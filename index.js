@@ -26,9 +26,9 @@
     .domain([0, maxEduPercent]);
     console.log(maxEduPercent)
   const legendXAxis = d3.axisBottom(legendXScale).tickFormat((d,index) => {
-    console.log("yo",d, index)
+    console.log(d, index)
     return `${legendPercents[index]}%`;
-  });
+  }).ticks(8).tickSizeOuter(0);
 
   // Create chart container dimensions
   const margin = { top: 40, right: 80, bottom: 40, left: 80 };
