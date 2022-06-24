@@ -24,3 +24,10 @@ body {
   stroke: #fff;
   stroke-width: 0.5;
 }
+
+.source-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  align-items: center;
+}

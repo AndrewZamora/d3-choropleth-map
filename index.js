@@ -23,8 +23,7 @@
   const legendXScale = d3
     .scaleLinear()
     .range([0, 30 * legendPercents.length - 30])
-    .domain([0, maxEduPercent]);
-    console.log(maxEduPercent)
+    .domain([0, 70]);
   const legendXAxis = d3.axisBottom(legendXScale).tickFormat((d,index) => {
     console.log(d, index)
     return `${legendPercents[index]}%`;
@@ -53,7 +52,7 @@
     .append("svg")
     .attr("id", "legend")
     .attr("height", "50px")
-    .attr("width", "250px");
+    .attr("width", "300px");
   legend
     .append("g")
     .selectAll()
